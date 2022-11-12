@@ -1,7 +1,18 @@
 <template>
     <div class="w-25">
-        <div ref="dropzone" class="btn d-block p-5 bg-dark text-center text-light">
+        <input v-model="title" type="text" class="mb-3 form-control" placeholder="title">
+        <div ref="dropzone" class="mb-3 btn d-block p-5 bg-dark text-center text-light">
             Upload
+        </div>
+        <input @click.prevent="store" type="submit" class="btn btn-primary" value="add">
+
+        <div class="mt-5">
+            <div v-if="post">
+                <h4>{{ post.title}}</h4>
+                <div v-for="image in post.images" class="mb-3">
+                    <img :src="image.url">
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -13,14 +24,40 @@ export default {
 
     data() {
         return {
-            dropzone: null
+            dropzone: null,
+            title: null,
+            post: null
         }
     },
 
     mounted() {
         this.dropzone = new Dropzone(this.$refs.dropzone, {
-            url: "sdfsdf"
+            url: "/api/posts",
+            autoProcessQueue: false,
+            addRemoveLinks: true,
         })
+        this.getPosts()
+    },
+
+    methods: {
+        store() {
+            const data = new FormData()
+            const files = this.dropzone.getAcceptedFiles()
+            files.forEach(file => {
+                data.append('images[]', file)
+                this.dropzone.removeFile(file)
+            })
+            data.append('title', this.title)
+            this.title = ''
+            axios.post('/api/posts', data)
+        },
+
+        getPosts() {
+            axios.get('/api/posts')
+                .then( res => {
+                    this.post = res.data.data;
+                })
+        }
     }
 
 }
