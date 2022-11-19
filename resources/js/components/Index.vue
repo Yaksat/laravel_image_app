@@ -16,6 +16,7 @@
                     <img :src="image.preview_url" class="mb-3">
                     <img :src="image.url">
                 </div>
+                <div class="ql-editor" v-html="post.content"></div>
             </div>
         </div>
     </div>
@@ -92,6 +93,9 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style>
+.dz-success-mark,
+.dz-error-mark{
+    display: none;
+}
 </style>
